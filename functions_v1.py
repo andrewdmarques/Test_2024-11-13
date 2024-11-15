@@ -39,3 +39,13 @@ def create_barcode_dataframe(files):
     # Reset the index of the DataFrame
     df_sorted = df_sorted.reset_index(drop=True)
     return df_sorted
+
+
+# Function that concatinates the many fastq.gz files for each barcode into a single fastq.gz file
+def concatenate_files(df):
+    for index, row in df.iterrows():
+        # Prepare the command to concatenate files
+        cat_command = f"cat {' '.join(row['file_list'])} > {row['file_cat']}"
+        # Execute the cat command using subprocess
+        subprocess.run(cat_command, shell=True, check=True)
+        print(f"Concatenated files into {row['file_cat']}")

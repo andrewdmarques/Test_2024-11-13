@@ -14,7 +14,7 @@ import subprocess # For running commands like cat on linux
 
 dir_data = "/var/lib/minknow/data/ONT-02/no_sample_id/20241111_1419_MN23638_FAZ97636_6cd4fac2/fastq_pass"
 prefix = "2024-11-14"
-dir_working = "/media/andrewdmarques/Data011/Bioinformatics/49_ONT-Processing/Test_2024-11-13/"
+dir_working = "/media/andrewdmarques/Data011/Bioinformatics/49_ONT-Processing/Test-01/"
 dir_out = dir_working + prefix + '/' 
 
 #############################################
@@ -48,10 +48,15 @@ for index, row in ref1.iterrows():
     new_file_path = f"{dir_out}Fastq/{row['barcode']}.fastq.gz"
     # Assign the new file path to the new column 'file_cat'
     ref1.at[index, 'file_cat'] = new_file_path
-
+if not os.path.exists(dir_out + 'Fastq/'):
+    os.makedirs(dir_out + 'Fastq/')
 # Iterate through each row of the data frame and concatinate all files from a barcode together.
+concatenate_files(ref1)
 
-
+# Calculate (1) reads, (2) quality of each read, (3) 
+dir_metrics = dir_out + 'Metrics/'
+if not os.path.exists(dir_metrics):
+    os.makedirs(dir_metrics)
 # Iterate through the files and determine the 
 ref1.at[0, 'file_cat']
 
