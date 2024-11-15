@@ -4,7 +4,9 @@
 # Import packages
 #############################################
 import os  # For file management
-
+import datetime # For file management
+import pandas as pd # For managing dataframes
+import subprocess # For running commands like cat on linux
 
 #############################################
 # User defined variables
@@ -12,15 +14,16 @@ import os  # For file management
 
 dir_data = "/var/lib/minknow/data/ONT-02/no_sample_id/20241111_1419_MN23638_FAZ97636_6cd4fac2/fastq_pass"
 prefix = "2024-11-14"
-dir_working = "/media/andrewdmarques/Data011/Bioinformatics/49_ONT-Processing/Test_2024-11-13/" 
+dir_working = "/media/andrewdmarques/Data011/Bioinformatics/49_ONT-Processing/Test_2024-11-13/"
+dir_out = dir_working + prefix + '/' 
 
 #############################################
 # Run
 #############################################
 
 # Monitor how the script is running.
-script_cont  = True
-script_note = 'begin'
+cont  = True
+script_note = ['ONT-Pipeline','Script started: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')]
 
 # Confirm that we are in the working directory and read in the functions.
 os.chdir(dir_working)
@@ -30,7 +33,25 @@ from functions_v1 import *
 file1 = list_files_recursively(dir_data) 
 
 # Remove all files that are not fastq.gz
-file2 = [file for file in file1 if file.endswith('.fastq')]
+file2 = [file for file in file1 if file.endswith('.fastq.gz')]
+if len(file2) == 0:
+    cont = False
+    script_note =  [script_note,'Error: No fastq.gz files detected']
 
-# Determine which files are present in the directory.
+# Organize the fastq files:
+if cont == True:
+    ref1 = create_barcode_dataframe(file2)
+
+# Combine all sequence reads for each barcode together into a file and save it in the working date out dir (dir_out).
+for index, row in ref1.iterrows():
+    # Construct new file path using dir_out and barcode
+    new_file_path = f"{dir_out}Fastq/{row['barcode']}.fastq.gz"
+    # Assign the new file path to the new column 'file_cat'
+    ref1.at[index, 'file_cat'] = new_file_path
+
+# Iterate through each row of the data frame and concatinate all files from a barcode together.
+
+
+# Iterate through the files and determine the 
+ref1.at[0, 'file_cat']
 
