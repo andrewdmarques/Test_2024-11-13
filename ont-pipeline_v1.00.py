@@ -53,10 +53,33 @@ if not os.path.exists(dir_out + 'Fastq/'):
 # Iterate through each row of the data frame and concatinate all files from a barcode together.
 concatenate_files(ref1)
 
-# Calculate (1) reads, (2) quality of each read, (3) 
+# Prepare the metrics directory. This will be where the gz files will be unzipped and manually assessed.
 dir_metrics = dir_out + 'Metrics/'
 if not os.path.exists(dir_metrics):
     os.makedirs(dir_metrics)
+
+# Process each of the barcodes individually
+for xx in range(len(ref1)):
+    # Unzip the gz file to the barcode directory.
+    dir_bar = dir_metrics + ref1.at[xx, 'barcode'] + '/'
+    file_temp = dir_bar + os.path.basename(ref1.at[xx, 'file_cat']).replace('.gz','')
+    if not os.path.exists(dir_bar):
+        os.makedirs(dir_bar)
+    os.system('gunzip -c ' + ref1.at[xx, 'file_cat'] + ' > ' + file_temp)
+    print(xx)
+
+    # Determine how many lines are present in the file.
+    # Open the file, read lines, and count them
+    with open(file_temp, 'r') as file:
+        line_count = sum(1 for line in file)
+
+
+
+
+
+
+
+
 # Iterate through the files and determine the 
 ref1.at[0, 'file_cat']
 
