@@ -5,6 +5,7 @@
 #############################################
 import os  # For file management
 import datetime # For file management
+import sys # For calling the functions file
 import pandas as pd # For managing dataframes
 import subprocess # For running commands like cat on linux
 
@@ -15,6 +16,7 @@ import subprocess # For running commands like cat on linux
 dir_data = "/var/lib/minknow/data/ONT-02/no_sample_id/20241111_1419_MN23638_FAZ97636_6cd4fac2/fastq_pass"
 prefix = "2024-11-14"
 dir_working = "/media/andrewdmarques/Data011/Bioinformatics/49_ONT-Processing/Test-01/"
+file_function = "/media/andrewdmarques/Data011/Bioinformatics/49_ONT-Processing/Test_2024-11-13/functions_v1.py"
 dir_out = dir_working + prefix + '/' 
 
 #############################################
@@ -27,7 +29,10 @@ script_note = ['ONT-Pipeline','Script started: ' + datetime.datetime.now().strft
 
 # Confirm that we are in the working directory and read in the functions.
 os.chdir(dir_working)
-from functions_v1 import *
+module_dir, module_file = os.path.split(file_function)
+module_name = module_file[:-3]
+sys.path.insert(0, module_dir)
+import functions_v1
 
 # Determine all of the files that are in the data directory.
 file1 = list_files_recursively(dir_data) 
@@ -68,10 +73,18 @@ for xx in range(len(ref1)):
     os.system('gunzip -c ' + ref1.at[xx, 'file_cat'] + ' > ' + file_temp)
     print(xx)
 
-    # Determine how many lines are present in the file.
-    # Open the file, read lines, and count them
-    with open(file_temp, 'r') as file:
-        line_count = sum(1 for line in file)
+# Determine how many lines are present in the file.
+# Open the file, read lines, and count them
+with open(file_temp, 'r') as file:
+    line_count = sum(1 for line in file)/4
+    # Enumerate the lines, starting the count from 1 for simplicity
+    for ii, line in enumerate(file, 1):
+        # Check if the line number is the second line or every fourth line after that
+        if (ii - 2) % 4 == 0:
+            seq = line.strip()  # Add line to list, stripping newline characters
+            print(seq)
+
+
 
 
 
